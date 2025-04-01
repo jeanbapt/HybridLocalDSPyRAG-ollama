@@ -1,0 +1,25 @@
+# Core ML packages
+torch>=2.2.0
+torchvision>=0.17.0
+transformers>=4.37.0
+sentencepiece>=0.1.99
+
+# MLX packages
+mlx>=0.8.0
+
+# RAG and NLP packages
+rank_bm25>=0.2.2
+nltk>=3.8.1
+dspy-ai>=2.6.16
+
+# Ollama integration
+ollama>=0.4.7
+
+# Development tools
+jupyter>=1.0.0
+ipykernel>=6.29.0
+
+# Additional dependencies
+numpy>=1.26.0
+pandas>=2.2.0
+scikit-learn>=1.4.0 
