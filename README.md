@@ -35,21 +35,26 @@ A simple yet powerful French RAG (Retrieval-Augmented Generation) system that co
 
 ### Usage
 
-1. Start Jupyter:
+You can use the system in two ways:
+
+1. **Jupyter Notebook** (interactive exploration):
    ```bash
    jupyter notebook
+   # Open notebooks/hybrid_local_dspy_rag.ipynb
    ```
 
-2. Open `notebooks/hybrid_local_dspy_rag.ipynb`
-
-3. Follow the notebook instructions
+2. **Python Script** (direct usage):
+   ```bash
+   python hybrid_rag.py
+   ```
 
 ## Project Structure
 
 ```
 .
+├── hybrid_rag.py               # Standalone Python implementation
 ├── notebooks/
-│   ├── hybrid_local_dspy_rag.ipynb     # Implementation notebook
+│   ├── hybrid_local_dspy_rag.ipynb     # Interactive notebook
 │   └── hybrid_local_dspy_rag_guide.md  # Detailed guide
 ├── requirements.txt
 └── README.md
