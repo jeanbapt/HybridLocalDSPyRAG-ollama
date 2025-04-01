@@ -7,36 +7,28 @@ A simple yet powerful French RAG (Retrieval-Augmented Generation) system that co
 - Hybrid retrieval (CamemBERT + BM25) for French text
 - Local LLM inference using Ollama
 - DSPy-powered RAG pipeline
-- No cloud dependencies
 - Metal (MPS) acceleration support for Mac
-- MLX compatibility for optimal performance
 
 ## Quick Start
 
 ### Prerequisites
 - Python 3.11+
 - Ollama installed locally
-- Mistral model pulled via Ollama
-- Mac with Metal support (for MPS acceleration)
+- Mac with Metal support (recommended)
+- 8GB+ RAM recommended
 
 ### Installation
 
-1. Clone the repository:
+1. Clone and setup:
    ```bash
    git clone https://github.com/yourusername/HybridLocalDSPyRAG-ollama.git
    cd HybridLocalDSPyRAG-ollama
-   ```
-
-2. Set up the environment:
-   ```bash
    python -m venv venv
    source venv/bin/activate  # On Unix/macOS
-   # or
-   .\venv\Scripts\activate  # On Windows
    pip install -r requirements.txt
    ```
 
-3. Pull the Mistral model:
+2. Pull the Mistral model:
    ```bash
    ollama pull mistral
    ```
@@ -50,83 +42,76 @@ A simple yet powerful French RAG (Retrieval-Augmented Generation) system that co
 
 2. Open `notebooks/hybrid_local_dspy_rag.ipynb`
 
-3. Run all cells in sequence
+3. Follow the notebook instructions
 
 ## Project Structure
 
 ```
 .
 ├── notebooks/
-│   └── hybrid_local_dspy_rag.ipynb  # Main implementation
-├── requirements.txt                  # Dependencies
-└── README.md                        # This file
+│   ├── hybrid_local_dspy_rag.ipynb     # Implementation notebook
+│   └── hybrid_local_dspy_rag_guide.md  # Detailed guide
+├── requirements.txt
+└── README.md
 ```
-
-## Key Components
-
-### 1. Hybrid Retrieval
-- CamemBERT for semantic search
-- BM25 for lexical search
-- Weighted combination of both approaches
-
-### 2. Local LLM
-- Mistral model via Ollama
-- No API keys required
-- Full privacy and control
-
-### 3. DSPy Pipeline
-- Modular RAG implementation
-- Easy to extend and modify
-- Clean integration between components
-
-### 4. Hardware Acceleration
-- Metal (MPS) support for Mac
-- Automatic device selection
-- MLX compatibility for optimal performance
-
-## Hardware Acceleration Options
-
-### Metal (MPS) Support
-For Mac users with Metal support, the system automatically utilizes the Metal Performance Shaders (MPS) backend for PyTorch operations. This provides significant speedup for model inference and training.
-
-To enable MPS:
-```python
-import torch
-device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-model = model.to(device)
-```
-
-### MLX Compatibility
-The system is compatible with Apple's MLX framework for optimal performance on Apple Silicon. To use MLX:
-
-1. Install MLX:
-   ```bash
-   pip install mlx
-   ```
-
-2. Convert models to MLX format:
-   ```python
-   import mlx.core as mx
-   # Convert PyTorch tensors to MLX arrays
-   mlx_tensor = mx.array(pytorch_tensor.numpy())
-   ```
-
-## Limitations
-
-- Optimized for French language
-- Requires local GPU for best performance
-- Limited by Mistral's context window
-- Requires sufficient RAM (8GB+ recommended)
-- Metal support limited to Mac with Apple Silicon or AMD GPUs
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## Citations and Acknowledgments
 
-Built with:
-- CamemBERT for French language understanding
-- DSPy for the RAG framework
-- Mistral AI for the language model
-- CursorAI for development assistance 
+This project builds upon several outstanding open-source projects and research papers:
+
+### Models and Papers
+
+- **CamemBERT**: A state-of-the-art language model for French
+  ```bibtex
+  @inproceedings{martin2020camembert,
+    title={CamemBERT: a Tasty French Language Model},
+    author={Martin, Louis and Muller, Benjamin and Su{\'a}rez, Pedro Javier Ortiz and Dupont, Yoann and Romary, Laurent and de la Clergerie, {\'E}ric Villemonte and Seddah, Djam{\'e} and Sagot, Beno{\^i}t},
+    booktitle={Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+    year={2020}
+  }
+  ```
+  [Paper](https://arxiv.org/abs/1911.03894) | [HuggingFace Model](https://huggingface.co/camembert/camembert-base)
+
+- **Mistral 7B**: High-performance open-source language model
+  ```bibtex
+  @misc{mistral2023mistral,
+    title={Mistral 7B},
+    author={Mistral AI},
+    year={2023},
+    howpublished={\url{https://mistral.ai/news/announcing-mistral-7b/}},
+  }
+  ```
+  [Blog Post](https://mistral.ai/news/announcing-mistral-7b/)
+
+### Frameworks and Tools
+
+- **DSPy**: Programmatic control over language models
+  ```bibtex
+  @misc{khattab2023dspy,
+    title={DSPy: Programming with Foundation Models},
+    author={Omar Khattab and Arnav Singhvi and Paridhi Maheshwari and Christopher Potts and Matei Zaharia and Christopher R{\'e}},
+    year={2023},
+    eprint={2310.03714},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL}
+  }
+  ```
+  [Paper](https://arxiv.org/abs/2310.03714) | [GitHub](https://github.com/stanfordnlp/dspy)
+
+- **Ollama**: Local LLM serving and management
+  [GitHub](https://github.com/ollama/ollama)
+
+- **BM25**: Probabilistic relevance framework
+  ```bibtex
+  @article{robertson2009probabilistic,
+    title={The probabilistic relevance framework: BM25 and beyond},
+    author={Robertson, Stephen and Zaragoza, Hugo},
+    journal={Foundations and Trends in Information Retrieval},
+    year={2009}
+  }
+  ```
+  [Paper](https://dl.acm.org/doi/10.1561/1500000019) 
