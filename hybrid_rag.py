@@ -7,7 +7,7 @@ A French RAG system combining CamemBERT and BM25 for retrieval with Mistral for 
 import os
 import time
 import argparse
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict, Optional, Any
 
 import torch
 import nltk
@@ -40,7 +40,7 @@ class HybridRetriever:
         
     def encode(self, text: str) -> Tuple[torch.Tensor, torch.Tensor]:
         """Encode text using CamemBERT."""
-        inputs = self.tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+        inputs = self.tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=512)
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
         with torch.no_grad():
             outputs = self.model(**inputs)
@@ -107,7 +107,7 @@ class MistralOllamaLM(dspy.LM):
                 return response['message']['content']
             except Exception as e:
                 if attempt == self.max_retries - 1:
-                    raise Exception(f"Failed after {self.max_retries} attempts: {str(e)}")
+                    raise Exception(f"Failed to get response from Ollama after {self.max_retries} attempts: {str(e)}")
                 print(f"Attempt {attempt + 1} failed, retrying...")
                 time.sleep(1)
 
@@ -159,10 +159,53 @@ def main():
     
     # Sample documents (same as in notebook)
     documents = [
+        # Climate and Environment
         "Le changement climatique menace la biodiversité mondiale et accélère l'extinction des espèces.",
         "Les océans jouent un rôle crucial dans la régulation du climat et l'absorption du CO2.",
         "La fonte des glaciers arctiques modifie les courants océaniques et affecte le climat global.",
-        # Add more documents here...
+        "Les forêts tropicales sont essentielles pour maintenir l'équilibre climatique de la planète.",
+        
+        # Renewable Energy
+        "Les énergies renouvelables sont essentielles pour lutter contre le réchauffement climatique.",
+        "L'énergie solaire devient de plus en plus accessible et efficace pour les particuliers.",
+        "Les éoliennes offshore représentent une source importante d'énergie propre en Europe.",
+        "La transition énergétique nécessite des investissements massifs en infrastructure.",
+        
+        # Technology and AI
+        "L'intelligence artificielle transforme radicalement les méthodes de travail traditionnelles.",
+        "Le machine learning révolutionne la recherche médicale et le diagnostic des maladies.",
+        "Les algorithmes de deep learning permettent une meilleure compréhension du langage naturel.",
+        "La robotique collaborative améliore la sécurité et l'efficacité dans l'industrie.",
+        
+        # French Culture
+        "La gastronomie française est inscrite au patrimoine mondial de l'UNESCO.",
+        "Le cinéma français est reconnu pour sa créativité et sa diversité artistique.",
+        "Les traditions viticoles françaises se transmettent de génération en génération.",
+        "Le patrimoine architectural français témoigne de siècles d'histoire et d'innovation.",
+        
+        # Science and Research
+        "Les chercheurs français développent de nouveaux traitements contre le cancer.",
+        "Les découvertes en physique quantique ouvrent de nouvelles perspectives technologiques.",
+        "La recherche en biotechnologie permet des avancées majeures en médecine personnalisée.",
+        "Les études sur le génome humain révèlent de nouveaux mécanismes biologiques.",
+        
+        # Biodiversity
+        "La protection des abeilles est cruciale pour la préservation de la biodiversité.",
+        "Les récifs coralliens abritent 25% de la vie marine mondiale.",
+        "La déforestation menace des milliers d'espèces animales et végétales.",
+        "Les zones humides sont des écosystèmes essentiels pour la biodiversité.",
+        
+        # Sustainable Development
+        "L'agriculture biologique contribue à la préservation des sols et de la biodiversité.",
+        "L'économie circulaire propose un modèle plus durable de consommation.",
+        "Les villes intelligentes optimisent leur consommation d'énergie et réduisent leur impact environnemental.",
+        "Le développement durable concilie progrès économique et protection de l'environnement.",
+        
+        # Education and Innovation
+        "L'éducation numérique transforme les méthodes d'apprentissage traditionnelles.",
+        "Les fab labs encouragent l'innovation et la créativité technologique.",
+        "La formation continue devient essentielle dans un monde en constante évolution.",
+        "Les nouvelles technologies facilitent l'accès à l'éducation pour tous."
     ]
     
     # Initialize and index
