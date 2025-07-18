@@ -1,16 +1,16 @@
 # Core ML packages
-torch>=2.1.0
-torchvision>=0.17.0
-transformers>=4.36.0
-sentencepiece==0.1.99
+torch>=2.6.0  # Latest stable is 2.6
+torchvision>=0.21.0  # Updated to match PyTorch 2.6
+transformers>=4.53.2  # Latest stable version
+sentencepiece==0.2.0  # Updated to latest
 
 # MLX packages
-mlx>=0.0.8
+mlx>=0.1.0  # Keep flexible version
 
 # RAG and NLP packages
 rank_bm25>=0.2.2
-nltk>=3.8.1
-dspy-ai>=2.3.4
+nltk>=3.9.1  # Updated to latest
+dspy-ai>=2.6.27  # Latest version
 
 # Ollama integration
 ollama>=0.1.6
@@ -20,8 +20,8 @@ jupyter>=1.0.0
 ipykernel>=6.29.0
 
 # Additional dependencies
-numpy>=1.24.0
+numpy>=2.0.0  # Compatible with PyTorch 2.6
 pandas>=2.2.0
-scikit-learn>=1.3.0
+scikit-learn>=1.5.0  # Updated to latest
 dataclasses>=0.6
 typing>=3.7.4.3 

@@ -1,13 +1,35 @@
-# HybridLocalDSPyRAG-ollama
+# Hybrid Local DSPy RAG with Ollama
 
-A simple yet powerful French RAG (Retrieval-Augmented Generation) system that combines semantic and lexical search with local LLM inference.
+A French Retrieval-Augmented Generation (RAG) system that combines:
+- **CamemBERT** for semantic retrieval (French BERT model)
+- **BM25** for keyword-based retrieval
+- **Mistral** via Ollama for response generation
+- **DSPy** for optimization and prompt engineering
+
+This is a local, privacy-preserving implementation suitable for Apple Silicon Macs.
 
 ## Features
 
-- Hybrid retrieval (CamemBERT + BM25) for French text
-- Local LLM inference using Ollama
-- DSPy-powered RAG pipeline
-- Metal (MPS) acceleration support for Mac
+- 🇫🇷 Optimized for French language processing
+- 🔍 Hybrid retrieval combining semantic and keyword search
+- 🚀 Runs entirely locally using Ollama
+- 🎯 DSPy optimization for improved performance
+- 💻 Apple Silicon (MPS) optimized
+
+## Requirements
+
+- Python 3.9+
+- [Ollama](https://ollama.ai/) installed locally
+- 8GB+ RAM recommended
+
+**Note**: Dependencies have been updated to the latest stable versions (July 2025). See [UPGRADE_GUIDE.md](UPGRADE_GUIDE.md) for details on the updates.
+
+## Installation
+
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Quick Start
 
