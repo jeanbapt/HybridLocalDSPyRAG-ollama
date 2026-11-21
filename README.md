@@ -1,122 +1,170 @@
-# HybridLocalDSPyRAG-ollama
+# Analytics-STeeR Project
 
-A simple yet powerful French RAG (Retrieval-Augmented Generation) system that combines semantic and lexical search with local LLM inference.
-
-## Features
-
-- Hybrid retrieval (CamemBERT + BM25) for French text
-- Local LLM inference using Ollama
-- DSPy-powered RAG pipeline
-- Metal (MPS) acceleration support for Mac
-
-## Quick Start
-
-### Prerequisites
-- Python 3.11+
-- Ollama installed locally
-- Mac with Metal support (recommended)
-- 8GB+ RAM recommended
-
-### Installation
-
-1. Clone and setup:
-   ```bash
-   git clone https://github.com/yourusername/HybridLocalDSPyRAG-ollama.git
-   cd HybridLocalDSPyRAG-ollama
-   python -m venv venv
-   source venv/bin/activate  # On Unix/macOS
-   pip install -r requirements.txt
-   ```
-
-2. Pull the Mistral model:
-   ```bash
-   ollama pull mistral
-   ```
-
-### Usage
-
-You can use the system in two ways:
-
-1. **Jupyter Notebook** (interactive exploration):
-   ```bash
-   jupyter notebook
-   # Open notebooks/hybrid_local_dspy_rag.ipynb
-   ```
-
-2. **Python Script** (direct usage):
-   ```bash
-   python hybrid_rag.py
-   ```
+This project provides a data pipeline for loading, validating, and analyzing structured data using DuckDB and Pydantic models, with ontology-based validation.
 
 ## Project Structure
 
 ```
 .
-├── hybrid_rag.py               # Standalone Python implementation
-├── notebooks/
-│   ├── hybrid_local_dspy_rag.ipynb     # Interactive notebook
-│   └── hybrid_local_dspy_rag_guide.md  # Detailed guide
-├── requirements.txt
-└── README.md
+├── data/                     # Database and data files
+│   └── analytics_steer.duckdb  # Main DuckDB database
+├── ontology/                 # Ontology definitions
+│   └── analytics_steer_ontology.jsonld  # Ontology for Analytics-STeeR
+├── scripts/                  # Python scripts
+│   ├── __init__.py           # Package init
+│   ├── db_manager.py         # Database operations
+│   ├── load_data.py          # Data loading from CSV files
+│   ├── load_test_data.py     # Specific script for test data loading
+│   ├── models.py             # Pydantic data models
+│   ├── run_analytics.py      # Main execution script
+│   ├── schema_manager.py     # Database schema management
+│   ├── test_data_loading.py  # Unit testing framework
+│   └── validation.py         # Ontology-based validation
+└── test-structure.csv        # Sample data CSV
 ```
+
+## Requirements
+
+- Python 3.8+
+- DuckDB
+- Pandas
+- Pydantic
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+### Running the Data Pipeline
+
+```bash
+python -m scripts.run_analytics
+```
+
+For specific options:
+
+```bash
+python -m scripts.run_analytics --help
+```
+
+Available options:
+- `--csv-path`: Path to CSV file (default: `test-structure.csv`)
+- `--db-path`: Path to DuckDB database (default: `data/analytics_steer.duckdb`)
+- `--no-validation`: Skip validation tests
+- `--clean`: Clean existing database before loading
+
+### Running Unit Tests
+
+```bash
+PYTHONPATH=$PYTHONPATH:. python scripts/test_data_loading.py
+```
+
+## Key Features
+
+### 1. Ontology-Based Data Validation
+
+Data is validated against a formal ontology defined in JSON-LD format. This ensures:
+- Data consistency
+- Business rule enforcement
+- Metadata-driven validation
+
+### 2. Robust CSV Loading
+
+Features include:
+- Special character handling for column names (including French accents)
+- Automatic standardization of column names
+- European number format conversion (handles commas, periods, parentheses)
+- Automatic mapping of CSV columns to model fields
+
+### 3. Unified Column Mapping Strategy
+
+The project implements a centralized column mapping strategy to ensure consistent handling of CSV column names:
+
+- **Standardized Cleaning**: Converts column names to lowercase, removes accents, replaces spaces and special characters with underscores
+- **Ontology Alignment**: Maps cleaned column names to ontology property names
+- **Configuration-Based**: Uses a JSON configuration file to define mappings for known columns
+- **Graceful Fallbacks**: When an exact mapping isn't found, falls back to intelligent matching strategies
+
+Utility scripts include:
+- `scripts/generate_column_mapping.py`: Generates mapping file from CSV headers
+- `scripts/validate_model.py`: Validates mappings against the ontology
+
+Example usage:
+```bash
+# Generate mapping from CSV file
+python scripts/generate_column_mapping.py test-structure.csv
+
+# Validate mapping against ontology
+python scripts/validate_model.py
+```
+
+### 4. Schema Management
+
+The database schema is defined using Pydantic models and includes:
+- Strong typing
+- Automated validation
+- Default values
+- Foreign key relationships
+- Constraints matching business rules
+
+### 5. Analytics Engine
+
+Provides analytical capabilities:
+- Period-over-period metrics
+- Seasonality adjustments
+- Role-based hierarchical view
+- Authority relationship management
+
+## Data Model Overview
+
+### Core Dimensions
+- **Time**: Snapshot periods, fiscal years, date ranges
+- **Client**: Client information with hierarchical relationships
+- **Person**: Person information with identification
+- **Role**: Role assignments with authority relationships
+
+### Facts and Metrics
+- **Engagement**: Performance metrics for client engagements
+- **PopMetrics**: Period-over-period growth metrics
+- **SeasonalityMetrics**: Seasonality-adjusted performance metrics
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Import Errors**:
+   - Make sure `PYTHONPATH` includes the project root directory
+   - Check that all required `__init__.py` files exist
+
+2. **CSV Format Issues**:
+   - Check for BOM markers in CSV files
+   - Verify separator is semicolon (`;`)
+   - Confirm encoding (Latin-1 by default)
+
+3. **Special Characters**:
+   - Column names with accents or special characters are automatically cleaned
+   - Numbers with European formatting (comma as decimal) are properly handled
+
+4. **DuckDB Errors**:
+   - DuckDB requires appropriate data types
+   - Foreign key violations indicate data consistency issues
+   - DuckDB settings may need adjustment based on version
+
+## Future Enhancements
+
+1. **Data Visualization Layer**: Integrate plotting and dashboarding capabilities
+2. **Multiple Data Sources**: Extend to handle data from various sources
+3. **Advanced Ontology Reasoning**: Implement inferencing based on ontology rules
+4. **Incremental Loading**: Support for incremental data loading and updates
+5. **Schema Evolution**: Handle changes in source data schema over time
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Proprietary - All rights reserved.
 
-## Citations and Acknowledgments
+## Contact
 
-This project builds upon several outstanding open-source projects and research papers:
-
-### Models and Papers
-
-- **CamemBERT**: A state-of-the-art language model for French
-  ```bibtex
-  @inproceedings{martin2020camembert,
-    title={CamemBERT: a Tasty French Language Model},
-    author={Martin, Louis and Muller, Benjamin and Su{\'a}rez, Pedro Javier Ortiz and Dupont, Yoann and Romary, Laurent and de la Clergerie, {\'E}ric Villemonte and Seddah, Djam{\'e} and Sagot, Beno{\^i}t},
-    booktitle={Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
-    year={2020}
-  }
-  ```
-  [Paper](https://arxiv.org/abs/1911.03894) | [HuggingFace Model](https://huggingface.co/camembert/camembert-base)
-
-- **Mistral 7B**: High-performance open-source language model
-  ```bibtex
-  @misc{mistral2023mistral,
-    title={Mistral 7B},
-    author={Mistral AI},
-    year={2023},
-    howpublished={\url{https://mistral.ai/news/announcing-mistral-7b/}},
-  }
-  ```
-  [Blog Post](https://mistral.ai/news/announcing-mistral-7b/)
-
-### Frameworks and Tools
-
-- **DSPy**: Programmatic control over language models
-  ```bibtex
-  @misc{khattab2023dspy,
-    title={DSPy: Programming with Foundation Models},
-    author={Omar Khattab and Arnav Singhvi and Paridhi Maheshwari and Christopher Potts and Matei Zaharia and Christopher R{\'e}},
-    year={2023},
-    eprint={2310.03714},
-    archivePrefix={arXiv},
-    primaryClass={cs.CL}
-  }
-  ```
-  [Paper](https://arxiv.org/abs/2310.03714) | [GitHub](https://github.com/stanfordnlp/dspy)
-
-- **Ollama**: Local LLM serving and management
-  [GitHub](https://github.com/ollama/ollama)
-
-- **BM25**: Probabilistic relevance framework
-  ```bibtex
-  @article{robertson2009probabilistic,
-    title={The probabilistic relevance framework: BM25 and beyond},
-    author={Robertson, Stephen and Zaragoza, Hugo},
-    journal={Foundations and Trends in Information Retrieval},
-    year={2009}
-  }
-  ```
-  [Paper](https://dl.acm.org/doi/10.1561/1500000019) 
+For questions or assistance, please contact the Analytics-STeeR team. 

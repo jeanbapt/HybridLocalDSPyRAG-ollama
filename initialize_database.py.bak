@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""
+Initialize the Analytics-STeeR database and load test data.
+"""
+import os
+import sys
+from pathlib import Path
+
+# Add src to path for importing modules
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from scripts.schema_generator import SchemaGenerator
+from src.models.load_data import load_csv_to_duckdb
+from src.utils.column_mapper import get_column_mapping
+from src.utils.period_utils import (
+    extract_period_from_filename, 
+    get_period_label,
+    current_period
+)
+import pandas as pd
+import duckdb
+
+def init_database(db_path: str = "data/analytics_steer.duckdb") -> None:
+    """Initialize the database schema using the SchemaGenerator"""
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    
+    # Connect to the database
+    print(f"Initializing database at {db_path}...")
+    conn = duckdb.connect(db_path)
+    
+    try:
+        # Initialize schema generator
+        generator = SchemaGenerator()
+        
+        # Create schema
+        print("Creating database schema...")
+        generator.create_schema(conn)
+        
+        print("Database schema initialized successfully!")
+        
+    finally:
+        # Close the connection
+        conn.close()
+
+def main():
+    """
+    Initialize the database and load test data.
+    
+    Usage:
+        python initialize_database.py [--skip-load] [--generate-mapping] [--period=YYYYPPP]
+    
+    Options:
+        --skip-load: Skip loading test data, only initialize the schema
+        --generate-mapping: Generate column mapping file from CSV
+        --period=YYYYPPP: Explicitly specify the period to use (e.g., --period=2025010)
+    """
+    # Default paths
+    db_path = "data/analytics_steer.duckdb"
+    csv_path = "test-structure.csv"
+    
+    # Parse command-line arguments
+    skip_load = "--skip-load" in sys.argv
+    generate_mapping = "--generate-mapping" in sys.argv
+    
+    # Check for explicit period argument
+    period_arg = None
+    for arg in sys.argv:
+        if arg.startswith("--period="):
+            period_arg = arg.split("=")[1]
+            break
+    
+    # Try to detect period from filename if not explicitly provided
+    if not period_arg and os.path.exists(csv_path):
+        filename_period = extract_period_from_filename(csv_path)
+        if filename_period:
+            period_arg = filename_period
+            print(f"Detected period from filename: {period_arg} ({get_period_label(period_arg)})")
+    
+    # If no period detected, use current period
+    if not period_arg:
+        period_arg = current_period()
+        print(f"No period specified or detected. Using current period: {period_arg} ({get_period_label(period_arg)})")
+    
+    # Initialize the database schema
+    print(f"Initializing database at {db_path}...")
+    init_database(db_path)
+    print("Database schema initialized successfully.")
+    
+    # Generate column mapping if requested
+    if generate_mapping:
+        print(f"Generating column mapping from {csv_path}...")
+        
+        # Read CSV headers
+        try:
+            # First determine delimiter
+            with open(csv_path, 'r', encoding='latin-1') as f:
+                sample = f.readline()
+                delimiter = ';' if ';' in sample else ','
+                
+            df = pd.read_csv(csv_path, delimiter=delimiter, nrows=0, encoding='latin-1')
+            column_names = df.columns.tolist()
+            
+            # Import this here to avoid circular imports
+            from src.utils.column_mapper import ColumnMapper
+            mapper = ColumnMapper()
+            mapper.generate_mapping_file(column_names)
+            
+            print(f"Column mapping generated for {len(column_names)} columns")
+        except Exception as e:
+            print(f"Error generating column mapping: {e}")
+    
+    # Load test data if not skipped
+    if not skip_load:
+        if not os.path.exists(csv_path):
+            print(f"Error: Test data file not found at {csv_path}")
+            print("Skipping data load.")
+            return
+        
+        print(f"Loading test data from {csv_path}...")
+        try:
+            # Try with latin-1 encoding first, fallback to utf-8 if needed
+            load_csv_to_duckdb(csv_path, db_path, encoding="latin-1", period=period_arg)
+            print("Test data loaded successfully.")
+        except Exception as e:
+            print(f"Error loading test data: {e}")
+            return
+    
+    print("Database initialization complete!")
+
+if __name__ == "__main__":
+    main() 

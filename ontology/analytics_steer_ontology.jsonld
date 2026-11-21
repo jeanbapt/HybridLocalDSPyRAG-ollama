@@ -1,0 +1,433 @@
+{
+    "@context": {
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "analytics": "http://analytics-steer.org/ontology#"
+    },
+    "@id": "analytics:AnalyticsSteerOntology",
+    "@type": "owl:Ontology",
+    "version": "1.0.2",
+    "created": "2024-03-21T00:00:00Z",
+    "updated": "2024-05-05T00:00:00Z",
+    "description": "Ontology for Analytics-STeeR data model - pruned to match Pydantic models",
+    
+    "classes": {
+        "Time": {
+            "@id": "analytics:Time",
+            "description": "Time-related dimensions and period definitions",
+            "properties": {
+                "snapshot_period": {
+                    "@id": "analytics:snapshotPeriod",
+                    "type": "xsd:string",
+                    "description": "Period identifier (e.g., 2023-12)"
+                },
+                "year": {
+                    "@id": "analytics:year",
+                    "type": "xsd:integer",
+                    "description": "Year component of period",
+                    "constraints": {
+                        "min": 2000,
+                        "max": 2100
+                    }
+                },
+                "period": {
+                    "@id": "analytics:period",
+                    "type": "xsd:integer",
+                    "description": "Period number within year (1-based)",
+                    "constraints": {
+                        "min": 1,
+                        "max": 12
+                    }
+                },
+                "period_type": {
+                    "@id": "analytics:periodType",
+                    "type": "xsd:string",
+                    "enum": ["month", "quarter", "semester", "year"],
+                    "default": "month",
+                    "description": "Type of period (default: month)"
+                },
+                "fiscal_year": {
+                    "@id": "analytics:fiscalYear",
+                    "type": "xsd:integer",
+                    "description": "Fiscal year",
+                    "constraints": {
+                        "min": 2000,
+                        "max": 2100
+                    }
+                },
+                "fiscal_period": {
+                    "@id": "analytics:fiscalPeriod",
+                    "type": "xsd:integer",
+                    "description": "Period number within fiscal year",
+                    "constraints": {
+                        "min": 1,
+                        "max": 12
+                    }
+                },
+                "debut_periode": {
+                    "@id": "analytics:debutPeriode",
+                    "type": "xsd:date",
+                    "description": "Start date of the period"
+                },
+                "fin_periode": {
+                    "@id": "analytics:finPeriode",
+                    "type": "xsd:date",
+                    "description": "End date of the period"
+                },
+                "is_current_period": {
+                    "@id": "analytics:isCurrentPeriod",
+                    "type": "xsd:boolean",
+                    "description": "Indicates if this is the current period",
+                    "default": false
+                },
+                "fiscal_year_start_month": {
+                    "@id": "analytics:fiscalYearStartMonth",
+                    "type": "xsd:integer",
+                    "description": "Starting month of the fiscal year",
+                    "default": 1,
+                    "constraints": {
+                        "min": 1,
+                        "max": 12
+                    }
+                }
+            }
+        },
+        
+        "Client": {
+            "@id": "analytics:Client",
+            "description": "Client information and hierarchy",
+            "properties": {
+                "client_id": {
+                    "@id": "analytics:clientId",
+                    "type": "xsd:string",
+                    "description": "Unique client identifier",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "client_name": {
+                    "@id": "analytics:clientName",
+                    "type": "xsd:string",
+                    "description": "Client name",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "client_group_name": {
+                    "@id": "analytics:clientGroupName",
+                    "type": "xsd:string",
+                    "description": "Client group identifier",
+                    "optional": true
+                },
+                "direct_parent_id": {
+                    "@id": "analytics:directParentId",
+                    "type": "xsd:string",
+                    "description": "Direct parent client identifier",
+                    "optional": true
+                },
+                "industry_sector": {
+                    "@id": "analytics:industrySector",
+                    "type": "xsd:string",
+                    "description": "Industry sector classification",
+                    "optional": true
+                },
+                "industry": {
+                    "@id": "analytics:industry",
+                    "type": "xsd:string",
+                    "description": "Industry classification",
+                    "optional": true
+                },
+                "sector": {
+                    "@id": "analytics:sector",
+                    "type": "xsd:string",
+                    "description": "Sector classification",
+                    "optional": true
+                },
+                "region": {
+                    "@id": "analytics:region",
+                    "type": "xsd:string",
+                    "description": "Geographic region",
+                    "optional": true
+                },
+                "pole": {
+                    "@id": "analytics:pole",
+                    "type": "xsd:string",
+                    "description": "Business unit or division",
+                    "optional": true
+                }
+            }
+        },
+        
+        "Person": {
+            "@id": "analytics:Person",
+            "description": "Physical person information",
+            "properties": {
+                "person_id": {
+                    "@id": "analytics:personId",
+                    "type": "xsd:string",
+                    "description": "Unique person identifier",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "matricule": {
+                    "@id": "analytics:matricule",
+                    "type": "xsd:string",
+                    "description": "Employee identifier",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "full_name": {
+                    "@id": "analytics:fullName",
+                    "type": "xsd:string",
+                    "description": "Person's full name",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                }
+            }
+        },
+        
+        "Role": {
+            "@id": "analytics:Role",
+            "description": "Role types and assignments",
+            "properties": {
+                "role_id": {
+                    "@id": "analytics:roleId",
+                    "type": "xsd:string",
+                    "description": "Unique role identifier",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "role_type": {
+                    "@id": "analytics:roleType",
+                    "type": "xsd:string",
+                    "enum": [
+                        "LCSP",
+                        "EngagementPartner",
+                        "EngagementManager",
+                        "ParticipatingPartner",
+                        "ParticipatingManager",
+                        "BillingPartner",
+                        "BillingManager",
+                        "EngagementController",
+                        "Consultant"
+                    ],
+                    "description": "Type of role"
+                },
+                "authority_level": {
+                    "@id": "analytics:authorityLevel",
+                    "type": "xsd:integer",
+                    "enum": [1, 2, 3, 4, 5, 6, 7, 8],
+                    "description": "Hierarchical authority level"
+                },
+                "start_date": {
+                    "@id": "analytics:roleStartDate",
+                    "type": "xsd:date",
+                    "description": "Role assignment start date"
+                },
+                "end_date": {
+                    "@id": "analytics:roleEndDate",
+                    "type": "xsd:date",
+                    "description": "Role assignment end date",
+                    "optional": true
+                },
+                "person_id": {
+                    "@id": "analytics:personIdRef",
+                    "type": "xsd:string",
+                    "description": "Reference to the person assigned to this role",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "client_id": {
+                    "@id": "analytics:clientIdRef",
+                    "type": "xsd:string",
+                    "description": "Reference to the client associated with this role",
+                    "optional": true
+                },
+                "engagement_id": {
+                    "@id": "analytics:engagementIdRef",
+                    "type": "xsd:string",
+                    "description": "Reference to the engagement associated with this role",
+                    "optional": true
+                },
+                "under_authority_of": {
+                    "@id": "analytics:underAuthorityOfRef",
+                    "type": "xsd:string",
+                    "description": "Reference to the role with authority over this role",
+                    "optional": true
+                }
+            }
+        },
+        
+        "Engagement": {
+            "@id": "analytics:Engagement",
+            "description": "Engagement information and metrics",
+            "properties": {
+                "engagement_id": {
+                    "@id": "analytics:engagementId",
+                    "type": "xsd:string",
+                    "description": "Unique engagement identifier",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "snapshot_period": {
+                    "@id": "analytics:engagementSnapshotPeriod",
+                    "type": "xsd:string",
+                    "description": "Reference to the snapshot period",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "client_id": {
+                    "@id": "analytics:engagementClientId",
+                    "type": "xsd:string",
+                    "description": "Reference to the client",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "master_engagement": {
+                    "@id": "analytics:masterEngagement",
+                    "type": "xsd:string",
+                    "description": "Master engagement identifier",
+                    "optional": true
+                },
+                "net_revenue": {
+                    "@id": "analytics:netRevenue",
+                    "type": "xsd:decimal",
+                    "description": "Net revenue for the period",
+                    "constraints": {
+                        "ge": 0
+                    }
+                },
+                "total_costs": {
+                    "@id": "analytics:totalCosts",
+                    "type": "xsd:decimal",
+                    "description": "Total costs for the period",
+                    "constraints": {
+                        "ge": 0
+                    }
+                },
+                "net_margin": {
+                    "@id": "analytics:netMargin",
+                    "type": "xsd:decimal",
+                    "description": "Net margin for the period",
+                    "derivedFrom": ["net_revenue", "total_costs"],
+                    "calculation": "net_revenue - total_costs"
+                },
+                "margin_percentage": {
+                    "@id": "analytics:marginPercentage",
+                    "type": "xsd:decimal",
+                    "description": "Margin percentage for the period",
+                    "constraints": {
+                        "ge": 0,
+                        "le": 100
+                    },
+                    "derivedFrom": ["net_margin", "net_revenue"],
+                    "calculation": "net_margin / net_revenue * 100"
+                }
+            }
+        },
+        
+        "PopMetrics": {
+            "@id": "analytics:PopMetrics",
+            "description": "Period-over-period comparison metrics",
+            "properties": {
+                "engagement_id": {
+                    "@id": "analytics:popMetricsEngagementId",
+                    "type": "xsd:string",
+                    "description": "Reference to the engagement",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "snapshot_period": {
+                    "@id": "analytics:popMetricsSnapshotPeriod",
+                    "type": "xsd:string",
+                    "description": "Reference to the snapshot period",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "previous_period_revenue": {
+                    "@id": "analytics:previousPeriodRevenue",
+                    "type": "xsd:decimal",
+                    "description": "Revenue from the previous period",
+                    "optional": true
+                },
+                "previous_year_revenue": {
+                    "@id": "analytics:previousYearRevenue",
+                    "type": "xsd:decimal",
+                    "description": "Revenue from the same period in previous year",
+                    "optional": true
+                },
+                "pop_revenue_growth": {
+                    "@id": "analytics:popRevenueGrowth",
+                    "type": "xsd:decimal",
+                    "description": "Period-over-period revenue growth percentage",
+                    "optional": true
+                },
+                "yoy_revenue_growth": {
+                    "@id": "analytics:yoyRevenueGrowth",
+                    "type": "xsd:decimal",
+                    "description": "Year-over-year revenue growth percentage",
+                    "optional": true
+                },
+                "pop_margin_growth": {
+                    "@id": "analytics:popMarginGrowth",
+                    "type": "xsd:decimal",
+                    "description": "Period-over-period margin growth percentage",
+                    "optional": true
+                }
+            }
+        },
+        
+        "SeasonalityMetrics": {
+            "@id": "analytics:SeasonalityMetrics",
+            "description": "Seasonality-adjusted metrics",
+            "properties": {
+                "engagement_id": {
+                    "@id": "analytics:seasonalityMetricsEngagementId",
+                    "type": "xsd:string",
+                    "description": "Reference to the engagement",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "snapshot_period": {
+                    "@id": "analytics:seasonalityMetricsSnapshotPeriod",
+                    "type": "xsd:string",
+                    "description": "Reference to the snapshot period",
+                    "constraints": {
+                        "minLength": 1
+                    }
+                },
+                "seasonal_factor": {
+                    "@id": "analytics:seasonalFactor",
+                    "type": "xsd:decimal",
+                    "description": "Seasonal adjustment factor based on historical data",
+                    "optional": true
+                },
+                "seasonally_adjusted_revenue": {
+                    "@id": "analytics:seasonallyAdjustedRevenue",
+                    "type": "xsd:decimal",
+                    "description": "Revenue adjusted for seasonality",
+                    "optional": true
+                },
+                "seasonally_adjusted_growth": {
+                    "@id": "analytics:seasonallyAdjustedGrowth",
+                    "type": "xsd:decimal",
+                    "description": "Growth rate adjusted for seasonality",
+                    "optional": true
+                }
+            }
+        }
+    }
+} 
